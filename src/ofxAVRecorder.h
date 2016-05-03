@@ -70,8 +70,8 @@ class ofxAVRecorder : public ofThread {
 
     void stopRecording();
     
-    void listVideoDevices();
-    void listAudioDevices();
+    vector<string> listVideoDevices();
+    vector<string> listAudioDevices();
     
     void threadedFunction();
 

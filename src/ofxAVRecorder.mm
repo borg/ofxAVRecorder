@@ -97,26 +97,31 @@ void ofxAVRecorder::stopRecording() {
 
 //--------------------------------------------------------------
 
-void ofxAVRecorder::listVideoDevices() {
+vector<string> ofxAVRecorder::listVideoDevices() {
     [recorder refreshDevices];
     NSLog(@"______________Video devices______________");
+    
+    vector<string> list;
     for(AVCaptureDevice* device : [recorder videoDevices]){
         NSLog(@"%@",device.description);
+        list.push_back((string) [device.description UTF8String]);
     }
     NSLog(@"_________________________________________");
-
+    return list;
 }
 
 
 
-void ofxAVRecorder::listAudioDevices() {
+vector<string> ofxAVRecorder::listAudioDevices() {
     [recorder refreshDevices];
+    vector<string> list;
     NSLog(@"______________Audio devices______________");
     for(AVCaptureDevice* device : [recorder audioDevices]){
         NSLog(@"%@",device.description);
+        list.push_back((string) [device.description UTF8String]);
     }
     NSLog(@"_________________________________________");
-
+    return list;
 }
 
 vector<AVCaptureDevice *> ofxAVRecorder::getAvailableVideoDevices(){
