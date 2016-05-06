@@ -70,6 +70,10 @@ class ofxAVRecorder : public ofThread {
 
     void stopRecording();
     
+    NSView* previewView = 0;
+    void showPreview();
+    void hidePreview();
+    
     vector<string> listVideoDevices();
     vector<string> listAudioDevices();
     

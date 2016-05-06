@@ -54,6 +54,18 @@ ofxAVRecorder::~ofxAVRecorder(){
 };
 
 
+void ofxAVRecorder::showPreview(){
+    if(previewView){
+        [previewView setHidden:NO];
+    }
+};
+
+void ofxAVRecorder::hidePreview(){
+    if(previewView){
+        [previewView setHidden:YES];
+    }
+};
+
 //--------------------------------------------------------------
 void ofxAVRecorder::startRecording(string _outputPath, int _videoDeviceIndex, int _videoFormatIndex,int _videoFpsIndex, int _audioDeviceIndex, int _audioFormatIndex, int _compressionPresetIndex){
     
@@ -265,7 +277,7 @@ int ofxAVRecorder::getActiveAudioFormat(){
 
 void ofxAVRecorder::startSession(){
     NSWindow * appWindow = (NSWindow *)ofGetCocoaWindow();
-    NSView* previewView = [[NSView alloc] initWithFrame:CGRectMake(0, 0, ofGetWidth(), ofGetHeight()-10)];
+    previewView = [[NSView alloc] initWithFrame:CGRectMake(0, 0, ofGetWidth(), ofGetHeight()-10)];
 
 
     AVCaptureVideoPreviewLayer * previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:[recorder session]];
