@@ -45,6 +45,8 @@
  
  */
 
+ 
+
 #import <Cocoa/Cocoa.h>
 
 @class AVCaptureVideoPreviewLayer;
@@ -76,6 +78,8 @@
 	NSTimer						*audioLevelTimer;
 	
 	NSArray						*observers;
+    
+    NSString                    *outputPath;
 }
 
 #pragma mark Device Selection
