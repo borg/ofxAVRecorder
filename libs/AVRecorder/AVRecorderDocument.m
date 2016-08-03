@@ -45,6 +45,8 @@
  
  */
 
+
+
 #import "AVRecorderDocument.h"
 #import <AVFoundation/AVFoundation.h>
 
@@ -81,10 +83,19 @@
 @synthesize audioLevelTimer;
 @synthesize observers;
 @synthesize outputPath;
+//@syntehsize delegate;
+
+
+
+
 
 - (id)init
 {
 	self = [super init];
+    
+    self.delegate = 0;//for now
+   
+    
 	if (self) {
 		// Create a capture session
 		session = [[AVCaptureSession alloc] init];
@@ -127,7 +138,15 @@
 		
 		// Attach outputs to session
 		movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-		[movieFileOutput setDelegate:self];
+		
+
+        if(self.delegate){
+            [movieFileOutput setDelegate:self.delegate];
+        }else{
+            [movieFileOutput setDelegate:self];
+        }
+        
+        
 		[session addOutput:movieFileOutput];
 		
 		audioPreviewOutput = [[AVCaptureAudioPreviewOutput alloc] init];
@@ -445,16 +464,43 @@
 {
 	return [[self movieFileOutput] isRecording];
 }
+- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
+{
+    NSString *  result;
+    CFUUIDRef   uuid;
+    CFStringRef uuidStr;
+
+    uuid = CFUUIDCreate(NULL);
+    assert(uuid != NULL);
+
+    uuidStr = CFUUIDCreateString(NULL, uuid);
+    assert(uuidStr != NULL);
+
+    result = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@", prefix, uuidStr]];
+    assert(result != nil);
+
+    CFRelease(uuidStr);
+    CFRelease(uuid);
+
+    return result;
+}
 
 - (void)setRecording:(BOOL)record
 {
 	if (record) {
 		// Record to a temporary file, which the user will relocate when recording is finished
-		char *tempNameBytes = tempnam([NSTemporaryDirectory() fileSystemRepresentation], "AVRecorder_");
-		NSString *tempName = [[[NSString alloc] initWithBytesNoCopy:tempNameBytes length:strlen(tempNameBytes) encoding:NSUTF8StringEncoding freeWhenDone:YES] autorelease];
+		//char *tempNameBytes = tempnam([NSTemporaryDirectory() fileSystemRepresentation], "AVRecorder_");
+       
+		//NSString *tempName = [[[NSString alloc] initWithBytesNoCopy:tempNameBytes length:strlen(tempNameBytes) encoding:NSUTF8StringEncoding freeWhenDone:YES] autorelease];
 		
-		[[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:[tempName stringByAppendingPathExtension:@"mov"]]
-											recordingDelegate:self];
+        NSString *tempName = [self pathForTemporaryFileWithPrefix:@"AVRecorder_"];
+        
+        
+        if(self.delegate){
+            [[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:[tempName stringByAppendingPathExtension:@"mov"]] recordingDelegate:self.delegate];
+        }else{
+            [[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:[tempName stringByAppendingPathExtension:@"mov"]] recordingDelegate:self];
+        }
 	} else {
 		[[self movieFileOutput] stopRecording];
 	}
@@ -631,7 +677,7 @@
             NSError *error = nil;
             
             [[NSFileManager defaultManager] moveItemAtURL:outputFileURL toURL:output error:&error];
-            
+            NSLog(@"Did finish recording %@", output);
             if(error){
                 NSLog(@"%@",error.description);
             }
@@ -668,5 +714,23 @@
     // and shorter battery life.
     return NO;
 }
+
+
+
+- (void)presentError:(NSError *)error modalForWindow:(NSWindow *)window delegate:(nullable id)delegate didPresentSelector:(nullable SEL)didPresentSelector contextInfo:(nullable void *)contextInfo{
+    NSLog(@"presentError 1: %@",contextInfo);
+
+};
+
+
+- (BOOL)presentError:(NSError *)error{
+    NSLog(@"presentError: %@",error.description);
+};
+
+
+- (NSError *)willPresentError:(NSError *)error{
+ NSLog(@"willPresentError: %@",error.description);
+};
+
 
 @end
