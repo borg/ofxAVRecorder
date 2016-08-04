@@ -42,10 +42,10 @@
 #define _ofxAVRecorder
 
 #include "ofMain.h"
+#include "AVRecorderEvent.h"
 
-#import "AVRecorderDocument.h"
 
-
+@class AVRecorderDocument;
 @class AVCaptureVideoPreviewLayer;
 @class AVCaptureSession;
 @class AVCaptureDeviceInput;
@@ -56,6 +56,19 @@
 @class AVCaptureDeviceFormat;
 @class AVFrameRateRange;
 
+
+
+@interface AVRecorderDelegate : NSObject
+{
+//@private
+    //NSString *outputPath;
+};
+
+@property( nonatomic, retain ) NSString * outputPath;
+@end
+
+
+
 class ofxAVRecorder : public ofThread {
 	
   public:
@@ -63,12 +76,20 @@ class ofxAVRecorder : public ofThread {
 	ofxAVRecorder();
     ~ofxAVRecorder();
 	
-    
-    
+    static ofEvent <AVRecorderEvent> RECORDING_BEGAN;
+    static ofEvent <AVRecorderEvent> RECORDING_FINISHED;
+    static ofEvent <AVRecorderEvent> RECORDING_ERROR;
+
+
+    AVRecorderDelegate * delegate;
 
     void startRecording(string outputPath, int videoDeviceIndex = -1, int videoFormatIndex =-1,int videoFpsIndex = -1, int audioDeviceIndex = -1, int audioFormatIndex = -1, int compressionPresetIndex = -1);
 
     void stopRecording();
+    
+    NSView* previewView = 0;
+    void showPreview();
+    void hidePreview();
     
     vector<string> listVideoDevices();
     vector<string> listAudioDevices();

@@ -45,8 +45,10 @@
  
  */
 
-#import <Cocoa/Cocoa.h>
+ 
 
+#import <Cocoa/Cocoa.h>
+#import <AVFoundation/AVFoundation.h>
 @class AVCaptureVideoPreviewLayer;
 @class AVCaptureSession;
 @class AVCaptureDeviceInput;
@@ -56,6 +58,7 @@
 @class AVCaptureDevice;
 @class AVCaptureDeviceFormat;
 @class AVFrameRateRange;
+
 
 @interface AVRecorderDocument : NSDocument
 {
@@ -76,6 +79,12 @@
 	NSTimer						*audioLevelTimer;
 	
 	NSArray						*observers;
+    
+    NSString                    *outputPath;
+    
+    
+    //AVCaptureFileOutputDelegate   *fileOutputDelegate;
+    //AVCaptureFileOutputRecordingDelegate *recordingDelegate;
 }
 
 #pragma mark Device Selection
@@ -104,14 +113,17 @@
 @property (retain) AVCaptureVideoPreviewLayer	*previewLayer;
 
 #pragma mark - Preview
-@property (assign) IBOutlet NSView *previewView;
+@property (assign) NSView *previewView;
 @property (assign) float previewVolume;
-@property (assign) IBOutlet NSLevelIndicator *audioLevelMeter;
+@property (assign) NSLevelIndicator *audioLevelMeter;
 
 #pragma mark - Transport Controls
 @property (readonly,getter=isPlaying) BOOL playing;
 @property (readonly,getter=isRewinding) BOOL rewinding;
 @property (readonly,getter=isFastForwarding) BOOL fastForwarding;
-- (IBAction)stop:(id)sender;
+
+
+@property (nonatomic,assign) id<AVCaptureFileOutputDelegate,AVCaptureFileOutputRecordingDelegate>delegate;
+
 
 @end
